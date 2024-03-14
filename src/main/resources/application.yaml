@@ -1,0 +1,36 @@
+server:
+  port: 9090
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: producesyncauth@gmail.com
+    password: tkunxiklkucnydni
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  data:
+    mongodb:
+      database: produce_sync
+      port: 27017
+      host: localhost
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+
+
+passwordless:
+  email:
+    from: producesyncauth@gmail.com
+
+opencage:
+  key: f374b40d10584d2e9381a6c51caebb0c
+  url: https://api.opencagedata.com/geocode/v1/json
