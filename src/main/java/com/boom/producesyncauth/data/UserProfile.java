@@ -10,7 +10,7 @@ import java.util.List;
 @Document
 public class UserProfile{
     @Id
-    private String id;
+    private String userId;
     private String brandName;
     private String firstName;
     private String lastName;
@@ -26,11 +26,11 @@ public class UserProfile{
     }
 
     public String getId() {
-        return id;
+        return userId;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.userId = id;
     }
 
     public String getBrandName() {

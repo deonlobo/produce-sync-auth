@@ -57,7 +57,7 @@ public class CreateUserServiceImpl implements CreateUserService {
             userProfile.setId(autoIncrementService.getOrUpdateIdCount(role.name()));
             userProfile.setCreatedTs(Instant.now().toEpochMilli());
             userProfile.setRole(role);
-            repository.insert(userProfile);
+
 
             //Insert Address
             Address address = userProfile.getAddress();
@@ -71,10 +71,14 @@ public class CreateUserServiceImpl implements CreateUserService {
             address.setLocation(location);
 
             address.setRole(userProfile.getRole());
-            addressRepository.save(address);
+
 
             var jwtToken = jwtService.generateToken(userProfile);
+            System.out.println("Sending Email");
             sender.send(userProfile, jwtToken);
+            //Save only after the email is valid
+            repository.insert(userProfile);
+            addressRepository.save(address);
             return ResponseEntity.ok("Email sent successfully");
         } catch (Exception e) {
             // Handle the exception, log it, or take any appropriate action.
@@ -91,9 +95,7 @@ public class CreateUserServiceImpl implements CreateUserService {
                                 +", "+address.getProvince()+", "+ address.getCountry()
                                 +", "+address.getPostalCode();
         encodedAddress = URLEncoder.encode(encodedAddress);
-        System.out.println(encodedAddress);
         String apiUrl = String.format("%s?q=%s&key=%s", openCageUrl, encodedAddress, openCageKey);
-        System.out.println(apiUrl);
 
         ResponseEntity<OpenCageResponseDTO> responseEntity = restTemplate.getForEntity(apiUrl, OpenCageResponseDTO.class);
 
@@ -108,8 +110,11 @@ public class CreateUserServiceImpl implements CreateUserService {
     @Override
     public ResponseEntity<String> sendAuthMail(UserProfile userProfile, Role role) {
         var user = repository.findByUsername(userProfile.getUsername());
+        if(Objects.isNull(user)){
+            return ResponseEntity.status(409).body("The username "+userProfile.getUsername()+" is not valid.");
+        }
         if(!user.getRole().equals(role)){
-            return ResponseEntity.status(403).body("The User is not a "+role.name());
+            return ResponseEntity.status(409).body("The user is not a "+role.name());
         }
         var jwtToken = jwtService.generateToken(user);
         sender.send(user, jwtToken);
