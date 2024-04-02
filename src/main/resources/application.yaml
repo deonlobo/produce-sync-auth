@@ -6,7 +6,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: producesyncauth@gmail.com
-    password: tkunxiklkucnydni
+    password: qdpxnkfolpvwokhm
     properties:
       mail:
         smtp:
